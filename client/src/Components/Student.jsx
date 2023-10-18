@@ -6,6 +6,7 @@ function Student() {
     const [stname, setName] = useState('');
     const [course, setCourse] = useState('');
     const [fee, setFee] = useState('');
+    const [mobile, setMobile] = useState('');
 
     const [students, setUsers] = useState([]);
 
@@ -28,6 +29,7 @@ function Student() {
                 stname: stname,
                 course: course,
                 fee: fee,
+                mobile: mobile,
             });
             alert('Student Registation Successfully');
 
@@ -41,6 +43,7 @@ function Student() {
         setCourse(students.course);
         setFee(students.fee);
         setId(students.id);
+        setMobile(students.mobile);
     }
 
     async function DeleteStudent(id) {
@@ -61,6 +64,7 @@ function Student() {
                     stname: stname,
                     course: course,
                     fee: fee,
+                    mobile: mobile,
                 }
             );
             alert('Registation Updateddddd');
@@ -123,6 +127,19 @@ function Student() {
                         />
                     </div>
 
+                    <div className='form-group'>
+                        <label>Mobile</label>
+                        <input
+                            type='text'
+                            className='form-control'
+                            id='mobile'
+                            value={mobile}
+                            onChange={event => {
+                                setMobile(event.target.value);
+                            }}
+                        />
+                    </div>
+
                     <div>
                         <button className='btn btn-primary mt-4' onClick={save}>
                             Register
@@ -144,6 +161,7 @@ function Student() {
                         <th scope='col'>Student Name</th>
                         <th scope='col'>Course</th>
                         <th scope='col'>Fee</th>
+                        <th scope='col'>Mobile</th>
 
                         <th scope='col'>Option</th>
                     </tr>
@@ -156,6 +174,7 @@ function Student() {
                                 <td>{student.stname}</td>
                                 <td>{student.course}</td>
                                 <td>{student.fee}</td>
+                                <td>{student.mobile}</td>
                                 <td>
                                     <button
                                         type='button'

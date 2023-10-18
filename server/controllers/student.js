@@ -4,11 +4,12 @@ const db = require('../db/connect');
 // @route POST api/student/add
 // @access PUBLIC
 const addDetails = (req, res) => {
-    let { stname, course, fee } = req.body;
+    let { stname, course, fee, mobile } = req.body;
     let details = {
         stname: stname,
         course: course,
         fee: fee,
+        mobile: mobile,
     };
     let sql = 'INSERT INTO student SET ?';
     db.query(sql, details, error => {
@@ -54,7 +55,7 @@ const searchDetails = (req, res) => {
 // @access PUBLIC
 const updateDetails = (req, res) => {
     let { id } = req.params;
-    let { stname, course, fee } = req.body;
+    let { stname, course, fee, mobile } = req.body;
     let sql =
         "UPDATE Student set stname='" +
         stname +
@@ -62,8 +63,11 @@ const updateDetails = (req, res) => {
         course +
         "', fee=" +
         fee +
+        ', mobile=' +
+        mobile +
         ' where id=' +
         id;
+    console.log(sql);
     let query = db.query(sql, (error, result) => {
         if (error) {
             res.send({ success: true, message: 'Student Update Failed' });
