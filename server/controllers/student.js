@@ -1,36 +1,51 @@
 const db = require('../db/connect');
 
-// @description add new student details
+// @description Add new student details
 // @route POST api/student/add
 // @access PUBLIC
 const addDetails = (req, res) => {
-    let { stname, course, fee } = req.body;
-    let details = {
+    const { stname, course, fee, mobile } = req.body;
+
+    if (!stname || !course || isNaN(fee) || isNaN(mobile)) {
+        return res
+            .status(400)
+            .json({ success: false, message: 'Invalid input data' });
+    }
+
+    const details = {
         stname: stname,
         course: course,
         fee: fee,
+        mobile: mobile,
     };
-    let sql = 'INSERT INTO student SET ?';
-    db.query(sql, details, error => {
+    const sql = 'INSERT INTO student SET ?';
+
+    db.query(sql, details, (error, result) => {
         if (error) {
-            res.send({ status: false, message: 'Student creation failed' });
-        } else {
-            res.send({ status: true, message: 'Student created successfully' });
+            return res
+                .status(500)
+                .json({ success: false, message: 'Student creation failed' });
         }
+        res.status(201).json({
+            success: true,
+            message: 'Student created successfully',
+            id: result.insertId,
+        });
     });
 };
 
-// @description view student details
+// @description View student details
 // @route GET api/student/view
 // @access PUBLIC
 const viewDetails = (req, res) => {
-    let sql = 'SELECT * FROM STUDENT';
+    const sql = 'SELECT * FROM STUDENT';
     db.query(sql, (error, result) => {
         if (error) {
-            console.log('Error connecting to DB');
-        } else {
-            res.send({ status: true, data: result });
+            return res
+                .status(500)
+                .json({ success: false, message: 'Error connecting to DB' });
         }
+        res.status(200).json({ success: true, data: result });
     });
 };
 
@@ -38,14 +53,23 @@ const viewDetails = (req, res) => {
 // @route GET api/student/:id
 // @access PUBLIC
 const searchDetails = (req, res) => {
-    let { id } = req.params;
-    let sql = 'SELECT * FROM STUDENT where id=' + id;
-    db.query(sql, (error, result) => {
+    const { id } = req.params;
+    if (isNaN(id)) {
+        return res.status(400).json({ success: false, message: 'Invalid ID' });
+    }
+    const sql = 'SELECT * FROM STUDENT WHERE id = ?';
+    db.query(sql, [id], (error, result) => {
         if (error) {
-            console.log('Error connecting to DB');
-        } else {
-            res.send({ status: true, data: result });
+            return res
+                .status(500)
+                .json({ success: false, message: 'Error connecting to DB' });
         }
+        if (result.length === 0) {
+            return res
+                .status(404)
+                .json({ success: false, message: 'Student not found' });
+        }
+        res.status(200).json({ success: true, data: result[0] });
     });
 };
 
@@ -53,26 +77,32 @@ const searchDetails = (req, res) => {
 // @route PUT api/student/update/:id
 // @access PUBLIC
 const updateDetails = (req, res) => {
-    let { id } = req.params;
-    let { stname, course, fee } = req.body;
-    let sql =
-        "UPDATE Student set stname='" +
-        stname +
-        "', course='" +
-        course +
-        "', fee=" +
-        fee +
-        ' where id=' +
-        id;
-    let query = db.query(sql, (error, result) => {
+    const { id } = req.params;
+    const { stname, course, fee, mobile } = req.body;
+
+    if (isNaN(id) || !stname || !course || isNaN(fee) || isNaN(mobile)) {
+        return res
+            .status(400)
+            .json({ success: false, message: 'Invalid input data' });
+    }
+
+    const sql =
+        'UPDATE Student SET stname=?, course=?, fee=?, mobile=? WHERE id=?';
+    db.query(sql, [stname, course, fee, mobile, id], (error, result) => {
         if (error) {
-            res.send({ success: true, message: 'Student Update Failed' });
-        } else {
-            res.send({
-                success: true,
-                message: 'Student Updated Successfully',
-            });
+            return res
+                .status(500)
+                .json({ success: false, message: 'Student Update Failed' });
         }
+        if (result.affectedRows === 0) {
+            return res
+                .status(404)
+                .json({ success: false, message: 'Student not found' });
+        }
+        res.status(200).json({
+            success: true,
+            message: 'Student Updated Successfully',
+        });
     });
 };
 
@@ -80,17 +110,26 @@ const updateDetails = (req, res) => {
 // @route DELETE api/student/delete/:id
 // @access PUBLIC
 const deleteDetails = (req, res) => {
-    let { id } = req.params;
-    let sql = 'DELETE FROM Student where id=' + id;
-    db.query(sql, error => {
+    const { id } = req.params;
+    if (isNaN(id)) {
+        return res.status(400).json({ success: false, message: 'Invalid ID' });
+    }
+    const sql = 'DELETE FROM Student WHERE id = ?';
+    db.query(sql, [id], (error, result) => {
         if (error) {
-            res.send({ success: false, message: 'Student Deletion Failed' });
-        } else {
-            res.send({
-                success: false,
-                message: 'Student Deleted Successfully',
-            });
+            return res
+                .status(500)
+                .json({ success: false, message: 'Student Deletion Failed' });
         }
+        if (result.affectedRows === 0) {
+            return res
+                .status(404)
+                .json({ success: false, message: 'Student not found' });
+        }
+        res.status(200).json({
+            success: true,
+            message: 'Student Deleted Successfully',
+        });
     });
 };
 
