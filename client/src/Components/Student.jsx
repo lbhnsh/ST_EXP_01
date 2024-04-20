@@ -25,6 +25,19 @@ function Student() {
     async function save(event) {
         event.preventDefault();
         try {
+            if (stname === '') {
+                alert('Please Enter Student Name');
+                return;
+            } else if (course === '') {
+                alert('Please Enter Course');
+                return;
+            } else if (fee === '') {
+                alert('Please Enter Fee');
+                return;
+            } else if (mobile === '') {
+                alert('Please Enter Mobile');
+                return;
+            }
             await axios.post('http://localhost:9002/api/student/add', {
                 stname: stname,
                 course: course,
@@ -56,6 +69,23 @@ function Student() {
         event.preventDefault();
 
         try {
+            if (stname === '') {
+                alert('Please Enter Student Name');
+                return;
+            } else if (course === '') {
+                alert('Please Enter Course');
+                return;
+            } else if ('^d+(,d{1,2})?$'.match(fee)) {
+                alert('Please Enter Valid Fees');
+                return;
+            } else if (
+                '((+*)((0[ -]*)*|((91 )*))((d{12})+|(d{10})+))|d{5}([- ]*)d{6}'.match(
+                    mobile
+                )
+            ) {
+                alert('Please Enter Valid Mobile Number');
+                return;
+            }
             await axios.put(
                 'http://localhost:9002/api/student/update/' +
                     students.find(u => u.id === id).id || id,
@@ -70,9 +100,18 @@ function Student() {
             alert('Registation Updateddddd');
             Load();
         } catch (err) {
+            console.log(err);
             alert(' Registation Failed');
         }
     }
+
+    const refresh = () => {
+        setId('');
+        setName('');
+        setCourse('');
+        setFee('');
+        setMobile('');
+    };
 
     return (
         <div>
@@ -141,14 +180,26 @@ function Student() {
                     </div>
 
                     <div>
-                        <button className='btn btn-primary mt-4' onClick={save}>
+                        <button
+                            id='registerBtn'
+                            className='btn btn-primary mt-4'
+                            onClick={save}
+                        >
                             Register
                         </button>
                         <button
+                            id='updateBtn'
                             className='btn btn-warning mt-4'
                             onClick={update}
                         >
                             Update
+                        </button>
+                        <button
+                            id='refreshBtn'
+                            className='btn btn-secondary mt-4'
+                            onClick={refresh}
+                        >
+                            Refresh
                         </button>
                     </div>
                 </form>
@@ -168,7 +219,7 @@ function Student() {
                 </thead>
                 {students.map(function fn(student) {
                     return (
-                        <tbody>
+                        <tbody key={student.mobile}>
                             <tr>
                                 <th scope='row'>{student.id} </th>
                                 <td>{student.stname}</td>
