@@ -25,10 +25,10 @@ const addDetails = (req, res) => {
             return res
                 .status(500)
                 .json({ success: false, message: 'Student creation failed' });
-        }
+    }
         res.status(201).json({
             success: true,
-            message: 'Student created successfully',
+        message: 'Student created successfully',
             id: result.insertId,
         });
     });

@@ -16,8 +16,7 @@ async function runTests() {
             `Table should have rows. Found: ${tableRows.length}`
         );
 
-        // Pause for visualization
-        await driver.sleep(10000);
+        await driver.sleep(1000); // Just a small pause
 
         // Test 2: Add a New Student
         await driver.findElement(By.id('name')).sendKeys('Monkey D Luffy');
@@ -26,8 +25,11 @@ async function runTests() {
         await driver.findElement(By.id('mobile')).sendKeys('1234567890');
         await driver.findElement(By.id('registerBtn')).click();
 
-        // Pause for visualization
-        await driver.sleep(10000);
+        // Handle registration alert
+        await driver.wait(until.alertIsPresent());
+        await driver.switchTo().alert().accept();
+
+        await driver.sleep(1000); // Optional pause
 
         // Test 3: Edit a Student
         await driver
@@ -37,12 +39,16 @@ async function runTests() {
                 )
             )
             .click();
+
         await driver.findElement(By.id('course')).clear();
         await driver.findElement(By.id('course')).sendKeys('Physics');
         await driver.findElement(By.id('updateBtn')).click();
 
-        // Pause for visualization
-        await driver.sleep(10000);
+        // Handle update alert
+        await driver.wait(until.alertIsPresent());
+        await driver.switchTo().alert().accept();
+
+        await driver.sleep(1000); // Optional pause
 
         // Test 4: Delete a Student
         await driver
@@ -53,12 +59,17 @@ async function runTests() {
             )
             .click();
 
-        // Pause for visualization
-        await driver.sleep(10000);
+        // Handle delete alert
+        await driver.wait(until.alertIsPresent());
+        await driver.switchTo().alert().accept();
+
+        await driver.sleep(1000); // Optional pause
+
+        console.log('All tests passed successfully.');
+
     } catch (error) {
         console.error('Test failed:', error.message);
     } finally {
-        // Close the browser after all tests are completed
         await driver.quit();
     }
 }
